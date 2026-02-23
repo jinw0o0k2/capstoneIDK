@@ -875,7 +875,8 @@ partial class Gui : IDisposable
                     }
                 }
             }
-
+            
+            //추가
             if (ImGui.CollapsingHeader("Motion Blur"))
             {
                 // 1. 끄고 켤 수 있는 체크박스 (Application.cs의 IsMotionBlur와 연결)
@@ -1916,3 +1917,4 @@ partial class Gui
         return false;
     }
 }
+
