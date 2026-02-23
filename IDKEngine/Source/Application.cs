@@ -105,12 +105,12 @@ class Application : GameWindowBase
     public BoxRenderer BoxRenderer;
     public Bloom Bloom;
     public VolumetricLighting VolumetricLight;
-    public MotionBlur MotionBlur;
+    public MotionBlur MotionBlur; // 추가
     private Gui gui;
     public bool IsBloom = true;
     public bool IsVolumetricLighting = true;
     public bool RenderImGui = true;
-    public bool IsMotionBlur = true;
+    public bool IsMotionBlur = true; //추가
 
     // All models and all lights and Camera (the types of different entities)
     public ModelManager ModelManager;
@@ -202,14 +202,15 @@ class Application : GameWindowBase
                 }
 
                 BBG.Texture currentResult = RasterizerPipeline.Result;
-        
+                
+                //추가
                 if (IsMotionBlur)
                 {
                   
                     MotionBlur.Compute(currentResult, RasterizerPipeline.VelocityTexture);
                     currentResult = MotionBlur.Result; 
                 }
-
+                //변경 
                 TonemapAndGamma.Compute(currentResult, IsBloom ? Bloom.Result : null, IsVolumetricLighting ? VolumetricLight.Result : null);
                         RasterizerPipeline.LightingVRS.DebugRender(TonemapAndGamma.Result);
             }
@@ -647,7 +648,7 @@ class Application : GameWindowBase
 
             if (VolumetricLight != null) VolumetricLight.Dispose();
             VolumetricLight = new VolumetricLighting(presentRes, VolumetricLight == null ? new VolumetricLighting.GpuSettings() : VolumetricLight.Settings);
-
+            //추가
             if (MotionBlur != null) MotionBlur.Dispose();
                 MotionBlur = new MotionBlur(presentRes);
         }
@@ -757,3 +758,4 @@ class Application : GameWindowBase
         }
     }
 }
+
