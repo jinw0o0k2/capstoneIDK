@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Diagnostics;
 using OpenTK.Mathematics;
@@ -105,10 +105,12 @@ class Application : GameWindowBase
     public BoxRenderer BoxRenderer;
     public Bloom Bloom;
     public VolumetricLighting VolumetricLight;
+    public MotionBlur MotionBlur;
     private Gui gui;
     public bool IsBloom = true;
     public bool IsVolumetricLighting = true;
     public bool RenderImGui = true;
+    public bool IsMotionBlur = true;
 
     // All models and all lights and Camera (the types of different entities)
     public ModelManager ModelManager;
@@ -199,8 +201,17 @@ class Application : GameWindowBase
                     VolumetricLight.Compute();
                 }
 
-                TonemapAndGamma.Compute(RasterizerPipeline.Result, IsBloom ? Bloom.Result : null, IsVolumetricLighting ? VolumetricLight.Result : null);
-                RasterizerPipeline.LightingVRS.DebugRender(TonemapAndGamma.Result);
+                BBG.Texture currentResult = RasterizerPipeline.Result;
+        
+                if (IsMotionBlur)
+                {
+                  
+                    MotionBlur.Compute(currentResult, RasterizerPipeline.VelocityTexture);
+                    currentResult = MotionBlur.Result; 
+                }
+
+                TonemapAndGamma.Compute(currentResult, IsBloom ? Bloom.Result : null, IsVolumetricLighting ? VolumetricLight.Result : null);
+                        RasterizerPipeline.LightingVRS.DebugRender(TonemapAndGamma.Result);
             }
         }
 
@@ -636,6 +647,9 @@ class Application : GameWindowBase
 
             if (VolumetricLight != null) VolumetricLight.Dispose();
             VolumetricLight = new VolumetricLighting(presentRes, VolumetricLight == null ? new VolumetricLighting.GpuSettings() : VolumetricLight.Settings);
+
+            if (MotionBlur != null) MotionBlur.Dispose();
+                MotionBlur = new MotionBlur(presentRes);
         }
     }
 
