@@ -1,23 +1,24 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using ImGuiNET;
-using NativeFileDialogSharp;
-using BBLogger;
+﻿using BBLogger;
 using BBOpenGL;
 using IDKEngine.Bvh;
-using IDKEngine.Utils;
-using IDKEngine.Shapes;
 using IDKEngine.GpuTypes;
-using IDKEngine.Windowing;
+using IDKEngine.Shapes;
 using IDKEngine.ThirdParty;
-using SysVec3 = System.Numerics.Vector3;
-using SysVec2 = System.Numerics.Vector2;
-using OtkVec3 = OpenTK.Mathematics.Vector3;
+using IDKEngine.Utils;
+using IDKEngine.Windowing;
+using ImGuiNET;
+using NativeFileDialogSharp;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using OtkVec2 = OpenTK.Mathematics.Vector2;
+using OtkVec3 = OpenTK.Mathematics.Vector3;
+using SysVec2 = System.Numerics.Vector2;
+using SysVec3 = System.Numerics.Vector3;
 
 namespace IDKEngine.Render;
 
@@ -875,6 +876,28 @@ partial class Gui : IDisposable
                 }
             }
 
+            if (ImGui.CollapsingHeader("Motion Blur"))
+            {
+                // 1. 끄고 켤 수 있는 체크박스 (Application.cs의 IsMotionBlur와 연결)
+                ImGui.Checkbox("IsMotionBlur", ref app.IsMotionBlur);
+
+                if (app.IsMotionBlur)
+                {
+                    // 2. 샘플링 횟수 조절 (Samples가 MotionBlur 클래스 안에 public으로 있어야 함)
+                    int tempSamples = app.MotionBlur.Samples;
+                    if (ImGui.SliderInt("Samples", ref tempSamples, 1, 50))
+                    {
+                        app.MotionBlur.Samples = tempSamples;
+                    }
+
+                    // 3. 블러 강도 조절 (BlurStrength가 MotionBlur 클래스 안에 public으로 있어야 함)
+                    float tempStrength = app.MotionBlur.BlurStrength;
+                    if (ImGui.SliderFloat("Strength", ref tempStrength, 0.0f, 2.0f))
+                    {
+                        app.MotionBlur.BlurStrength = tempStrength;
+                    }
+                }
+            }
             if (ImGui.CollapsingHeader("SkyBox"))
             {
                 bool modified = false;
